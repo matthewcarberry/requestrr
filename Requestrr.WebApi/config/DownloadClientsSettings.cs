@@ -2,6 +2,7 @@
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Ombi;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Overseerr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Radarr;
+using Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Sonarr;
 
 namespace Requestrr.WebApi.config
@@ -14,5 +15,8 @@ namespace Requestrr.WebApi.config
         public SonarrSettings Sonarr { get; set; }
 
         public LidarrSettings Lidarr { get; set; }
+
+        public ReadarrSettings Bookshelf { get; set; }
+        public ReadarrSettings Listenarr { get; set; }
     }
 }

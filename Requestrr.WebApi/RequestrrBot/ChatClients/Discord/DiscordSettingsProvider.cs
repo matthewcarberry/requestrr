@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Requestrr.WebApi.RequestrrBot.Books;
 using Requestrr.WebApi.RequestrrBot.DownloadClients;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Lidarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Ombi;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Overseerr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Radarr;
+using Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Sonarr;
 using Requestrr.WebApi.RequestrrBot.Extensions;
 
@@ -26,11 +28,16 @@ namespace Requestrr.WebApi.RequestrrBot.ChatClients.Discord
                 TvShowDownloadClientConfigurationHash = ComputeTvClientConfigurationHashCode(settings),
                 MusicDownloadClient = settings.Music.Client,
                 MusicDownloadClientConfigurationHash = ComputeMusicClientConfigurationHashCode(settings),
+                BookDownloadClient = settings.Books.Client,
+                BookDownloadClientConfigurationHash = ComputeBookClientConfigurationHashCode(settings, BookFormat.Ebook),
+                AudiobookDownloadClient = settings.Audiobooks.Client,
+                AudiobookDownloadClientConfigurationHash = ComputeBookClientConfigurationHashCode(settings, BookFormat.Audiobook),
                 StatusMessage = settings.ChatClients.Discord.StatusMessage,
                 MonitoredChannels = settings.ChatClients.Discord.MonitoredChannels.ToObject<string[]>(),
                 TvShowRoles = settings.ChatClients.Discord.TvShowRoles.ToObject<string[]>(),
                 MovieRoles = settings.ChatClients.Discord.MovieRoles.ToObject<string[]>(),
                 MusicRoles = settings.ChatClients.Discord.MusicRoles.ToObject<string[]>(),
+                BookRoles = settings.ChatClients.Discord.BookRoles.ToObject<string[]>(),
                 ClientID = settings.ChatClients.Discord.ClientId,
                 EnableRequestsThroughDirectMessages = settings.ChatClients.Discord.EnableRequestsThroughDirectMessages,
                 AutomaticallyNotifyRequesters = settings.ChatClients.Discord.AutomaticallyNotifyRequesters,
@@ -140,6 +147,27 @@ namespace Requestrr.WebApi.RequestrrBot.ChatClients.Discord
             if (settings.Music.Client == DownloadClient.Lidarr)
             {
                 LidarrSettings clientSettings = new LidarrSettingsProvider().Provider();
+
+                hash.Add(clientSettings.Categories.Select(x => x.Name).GetSequenceHashCode());
+                hash.Add(clientSettings.Hostname);
+                hash.Add(clientSettings.Port);
+                hash.Add(clientSettings.ApiKey);
+                hash.Add(clientSettings.UseSSL);
+                hash.Add(clientSettings.Version);
+            }
+
+            return hash.ToHashCode();
+        }
+
+
+        public int ComputeBookClientConfigurationHashCode(dynamic settings, BookFormat format)
+        {
+            HashCode hash = new HashCode();
+            string client = settings[BookSettingsProvider.SectionName(format)].Client;
+
+            if (client == ReadarrSettingsProvider.ClientName(format))
+            {
+                ReadarrSettings clientSettings = new ReadarrSettingsProvider().Provide(format);
 
                 hash.Add(clientSettings.Categories.Select(x => x.Name).GetSequenceHashCode());
                 hash.Add(clientSettings.Hostname);

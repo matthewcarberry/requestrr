@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Requestrr.WebApi.RequestrrBot.Books;
 using Requestrr.WebApi.RequestrrBot.Notifications.TvShows;
 
 namespace Requestrr.WebApi.RequestrrBot
@@ -140,6 +141,58 @@ namespace Requestrr.WebApi.RequestrrBot
                 {
                     UserId = x.Key,
                     MusicArtistId = x.Value
+                }).ToArray());
+
+                _hasChanged = true;
+            }
+        }
+
+
+        /// <summary>
+        /// Name of the notifications section for a book format
+        /// </summary>
+        private static string BookSectionName(BookFormat format)
+        {
+            return format == BookFormat.Audiobook ? "Audiobooks" : "Books";
+        }
+
+
+        /// <summary>
+        /// Returns the book notifications for a format, files created before books were supported have no section yet
+        /// </summary>
+        public static JArray ReadBooks(BookFormat format)
+        {
+            dynamic notifications = Read();
+
+            lock (_lock)
+            {
+                JObject root = (JObject)notifications;
+                if (root[BookSectionName(format)] == null)
+                    root[BookSectionName(format)] = new JArray();
+
+                return (JArray)root[BookSectionName(format)];
+            }
+        }
+
+
+        public static void ClearAllBookNotifications(BookFormat format)
+        {
+            lock (_lock)
+            {
+                ((JObject)Read())[BookSectionName(format)] = new JArray();
+                _hasChanged = true;
+            }
+        }
+
+
+        public static void WriteBooks(BookFormat format, Dictionary<string, string[]> bookNotifications)
+        {
+            lock (_lock)
+            {
+                ((JObject)_cachedNotifications)[BookSectionName(format)] = JToken.FromObject(bookNotifications.Select(x => new
+                {
+                    UserId = x.Key,
+                    BookIds = x.Value
                 }).ToArray());
 
                 _hasChanged = true;

@@ -12,6 +12,7 @@
       "TvShowRoles": [],
       "MovieRoles": [],
       "MusicRoles": [],
+      "BookRoles": [],
       "MonitoredChannels": [],
       "EnableRequestsThroughDirectMessages": false,
       "AutomaticallyNotifyRequesters": true,
@@ -22,6 +23,46 @@
     "Language": "english"
   },
   "DownloadClients": {
+    "Bookshelf": {
+      "Hostname": "",
+      "Port": 8787,
+      "ApiKey": "",
+      "BaseUrl": "",
+      "Categories": [
+        {
+          "Id": 0,
+          "Name": "book",
+          "ProfileId": "1",
+          "MetadataProfileId": "1",
+          "RootFolder": "",
+          "Tags": []
+        }
+      ],
+      "SearchNewRequests": true,
+      "MonitorNewRequests": true,
+      "UseSSL": false,
+      "Version": "1"
+    },
+    "Listenarr": {
+      "Hostname": "",
+      "Port": 8787,
+      "ApiKey": "",
+      "BaseUrl": "",
+      "Categories": [
+        {
+          "Id": 0,
+          "Name": "audiobook",
+          "ProfileId": "1",
+          "MetadataProfileId": "1",
+          "RootFolder": "",
+          "Tags": []
+        }
+      ],
+      "SearchNewRequests": true,
+      "MonitorNewRequests": true,
+      "UseSSL": false,
+      "Version": "1"
+    },
     "Lidarr": {
       "Hostname": "",
       "Port": 8686,
@@ -120,6 +161,12 @@
     "Client": "Disabled"
   },
   "Music": {
+    "Client": "Disabled"
+  },
+  "Books": {
+    "Client": "Disabled"
+  },
+  "Audiobooks": {
     "Client": "Disabled"
   },
   "TvShows": {

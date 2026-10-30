@@ -39,6 +39,7 @@ import OverseerrClients from './store/reducers/OverseerrClientsReducer';
 import TvShowsClients from './store/reducers/TvShowsClientsReducer';
 import LidarrClients from "./store/reducers/LidarrClientsReducer.jsx";
 import MusicClients from "./store/reducers/MusicClientsReducer.jsx";
+import createBookClientsReducer from "./store/reducers/BookClientsReducer.jsx";
 
 
 
@@ -77,6 +78,8 @@ const store = configureStore({
     chatClients: ChatClients,
     movies: combinedMovieClientsReducer,
     music: combinedMusicClientsReducer,
+    books: createBookClientsReducer("books"),
+    audiobooks: createBookClientsReducer("audiobooks"),
     tvShows: combinedTvShowsClientsReducer,
     settings: SettingsReducer
   }

@@ -21,6 +21,7 @@ import ChatClients from "./views/ChatClients.jsx";
 import Movies from "./views/Movies.jsx";
 import TvShows from "./views/TvShows.jsx";
 import Music from "./views/Music.jsx"
+import Books from "./views/Books.jsx"
 import Register from "./views/Register.jsx";
 import Login from "./views/Login.jsx";
 import Logout from "./views/Logout.jsx";
@@ -55,6 +56,22 @@ var routes = [
     name: "Music",
     icon: "fas fa-music text-yellow",
     component: <Music/>,
+    layout: "/admin",
+    supportsAnonymousUser: true
+  },
+  {
+    path: "/books",
+    name: "Books",
+    icon: "fas fa-book text-green",
+    component: <Books key="books" section="books" clientName="Bookshelf" title="Books" description="This page is for configuring the connection between your bot and Bookshelf for ebook requests" />,
+    layout: "/admin",
+    supportsAnonymousUser: true
+  },
+  {
+    path: "/audiobooks",
+    name: "Audiobooks",
+    icon: "fas fa-headphones text-pink",
+    component: <Books key="audiobooks" section="audiobooks" clientName="Listenarr" title="Audiobooks" description="This page is for configuring the connection between your bot and Listenarr for audiobook requests" />,
     layout: "/admin",
     supportsAnonymousUser: true
   },

@@ -7,7 +7,11 @@ using Requestrr.WebApi.Controllers.DownloadClients.Ombi;
 using Requestrr.WebApi.Controllers.DownloadClients.Overseerr;
 using Requestrr.WebApi.Controllers.DownloadClients.Radarr;
 using Requestrr.WebApi.Controllers.DownloadClients.Sonarr;
+using Requestrr.WebApi.Controllers.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot;
+using Requestrr.WebApi.RequestrrBot.Books;
+using Requestrr.WebApi.RequestrrBot.DownloadClients;
+using Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Lidarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Overseerr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Radarr;
@@ -30,6 +34,62 @@ namespace Requestrr.WebApi.Controllers.DownloadClients
             {
                 NotificationsFile.ClearAllMusicNotifications();
                 settings.Music.Client = musicSettings.Client;
+            });
+        }
+
+
+        /// <summary>
+        /// Disables book or audiobook requests
+        /// </summary>
+        public static void SetDisabledClient(BookFormat format)
+        {
+            SettingsFile.Write(settings =>
+            {
+                NotificationsFile.ClearAllBookNotifications(format);
+                settings[BookSettingsProvider.SectionName(format)].Client = DownloadClient.Disabled;
+            });
+        }
+
+
+        /// <summary>
+        /// Saves the Bookshelf (ebooks) or Listenarr (audiobooks) settings and enables that client
+        /// </summary>
+        public static void SetReadarr(BookFormat format, ReadarrSettingsModel readarrSettings)
+        {
+            SettingsFile.Write(settings =>
+            {
+                dynamic clientSettings = settings.DownloadClients[ReadarrSettingsProvider.ClientName(format)];
+
+                clientSettings.Hostname = readarrSettings.Hostname;
+                clientSettings.Port = readarrSettings.Port;
+                clientSettings.ApiKey = readarrSettings.ApiKey;
+                clientSettings.BaseUrl = readarrSettings.BaseUrl;
+
+                clientSettings.Categories = JToken.FromObject(readarrSettings.Categories.Select(x => new ReadarrCategory
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    ProfileId = x.ProfileId,
+                    MetadataProfileId = x.MetadataProfileId,
+                    RootFolder = x.RootFolder,
+                    Tags = x.Tags
+                }).ToArray());
+
+                clientSettings.SearchNewRequests = readarrSettings.SearchNewRequests;
+                clientSettings.MonitorNewRequests = readarrSettings.MonitorNewRequests;
+
+                clientSettings.UseSSL = readarrSettings.UseSSL;
+                clientSettings.Version = readarrSettings.Version;
+
+                dynamic section = settings[BookSettingsProvider.SectionName(format)];
+                string clientName = ReadarrSettingsProvider.ClientName(format);
+
+                if (section.Client != clientName)
+                {
+                    NotificationsFile.ClearAllBookNotifications(format);
+                }
+
+                section.Client = clientName;
             });
         }
 

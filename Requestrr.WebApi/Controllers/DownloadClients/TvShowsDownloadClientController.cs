@@ -119,7 +119,10 @@ namespace Requestrr.WebApi.Controllers.DownloadClients
                 },
                 Overseerr = _downloadClientsSettings.Overseerr,
                 Restrictions = _tvShowsSettings.Restrictions,
-                OtherCategories = otherCategories.ToArray()
+                OtherCategories = otherCategories
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Ebook))
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Audiobook))
+                    .ToArray()
             });
         }
 
