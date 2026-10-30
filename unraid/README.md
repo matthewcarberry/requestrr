@@ -12,8 +12,10 @@ your existing appdata folder.
 1. Back up the existing config folder (usually `/mnt/user/appdata/requestrr`).
 2. Docker tab: click the Requestrr icon, then **Edit**.
 3. Change **Repository** to `ghcr.io/matthewcarberry/requestrr:latest`.
-4. Click **Apply**. Unraid pulls the new image and recreates the container
-   with the same port and config path.
+4. Check the config path's **Container Path** is `/root/config`. Some
+   Requestrr templates map `/config`, which this image does not use, so
+   settings would be lost on every update.
+5. Click **Apply**. Unraid pulls the new image and recreates the container.
 
 To go back, set Repository to `thomst08/requestrr:latest` and apply again.
 
@@ -26,6 +28,9 @@ docker run -d --name=requestrr-books --restart=unless-stopped \
   -p 4546:4545 -v /mnt/user/appdata/requestrr-books:/root/config \
   ghcr.io/matthewcarberry/requestrr:latest
 ```
+
+If you clone your existing template instead, set the config **Container
+Path** to `/root/config`.
 
 Give it its own Discord bot (a new application in the Discord developer
 portal). Two containers logged in with the same bot token fight over the
