@@ -17,6 +17,21 @@ your existing appdata folder.
 
 To go back, set Repository to `thomst08/requestrr:latest` and apply again.
 
+## Testing alongside an existing Requestrr
+
+Run the fork as a second container with its own config folder and port:
+
+```sh
+docker run -d --name=requestrr-books --restart=unless-stopped \
+  -p 4546:4545 -v /mnt/user/appdata/requestrr-books:/root/config \
+  ghcr.io/matthewcarberry/requestrr:latest
+```
+
+Give it its own Discord bot (a new application in the Discord developer
+portal). Two containers logged in with the same bot token fight over the
+slash commands. When you are happy with it, swap the main container over as
+described above and remove this one.
+
 ## Fresh install
 
 Copy `requestrr.xml` to `/boot/config/plugins/dockerMan/templates-user/my-requestrr.xml`
