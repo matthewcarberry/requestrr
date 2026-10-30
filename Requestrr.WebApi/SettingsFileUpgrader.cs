@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Lidarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Overseerr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Radarr;
+using Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Sonarr;
 
 namespace Requestrr.WebApi
@@ -298,6 +299,67 @@ namespace Requestrr.WebApi
                 ((JObject)settingsJson.ChatClients.Discord).Add("MusicRoles", JToken.FromObject(new List<string>()));
                 File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settingsJson));
             }
+
+            AddBookSettings(settingsFilePath, settingsJson);
+        }
+
+
+        /// <summary>
+        /// Adds the Bookshelf and Listenarr settings of this fork.
+        /// This checks for missing keys rather than bumping the version so it stays independent of upstream upgrades.
+        /// </summary>
+        private static void AddBookSettings(string settingsFilePath, dynamic settingsJson)
+        {
+            JObject root = (JObject)settingsJson;
+            JObject downloadClients = (JObject)root["DownloadClients"];
+            JObject discord = (JObject)root["ChatClients"]["Discord"];
+            bool changed = false;
+
+            foreach ((string clientName, string sectionName, string categoryName) in new[] { ("Bookshelf", "Books", "book"), ("Listenarr", "Audiobooks", "audiobook") })
+            {
+                if (downloadClients[clientName] == null)
+                {
+                    downloadClients.Add(clientName, JToken.FromObject(new ReadarrSettings
+                    {
+                        Hostname = string.Empty,
+                        Port = 8787,
+                        ApiKey = string.Empty,
+                        BaseUrl = string.Empty,
+                        Categories = new ReadarrCategory[]
+                        {
+                            new ReadarrCategory
+                            {
+                                Id = 0,
+                                Name = categoryName,
+                                ProfileId = 1,
+                                MetadataProfileId = 1,
+                                RootFolder = string.Empty,
+                                Tags = Array.Empty<int>()
+                            }
+                        },
+                        SearchNewRequests = true,
+                        MonitorNewRequests = true,
+                        UseSSL = false,
+                        Version = "1"
+                    }));
+                    changed = true;
+                }
+
+                if (root[sectionName] == null)
+                {
+                    root.Add(sectionName, JToken.FromObject(new { Client = "Disabled" }));
+                    changed = true;
+                }
+            }
+
+            if (discord["BookRoles"] == null)
+            {
+                discord.Add("BookRoles", JToken.FromObject(new List<string>()));
+                changed = true;
+            }
+
+            if (changed)
+                File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settingsJson));
         }
     }
 }

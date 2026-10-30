@@ -115,7 +115,10 @@ namespace Requestrr.WebApi.Controllers.DownloadClients
                     UseMovieIssue = _downloadClientsSettings.Ombi.UseMovieIssue
                 },
                 Overseerr = _downloadClientsSettings.Overseerr,
-                OtherCategories = otherCategories.ToArray()
+                OtherCategories = otherCategories
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Ebook))
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Audiobook))
+                    .ToArray()
             });
         }
 

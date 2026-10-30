@@ -111,7 +111,10 @@ namespace Requestrr.WebApi.Controllers.DownloadClients
                     MonitorNewRequests = _downloadClientsSettings.Lidarr.MonitorNewRequests,
                     Version = _downloadClientsSettings.Lidarr.Version
                 },
-                OtherCategories = otherCategories.ToArray()
+                OtherCategories = otherCategories
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Ebook))
+                    .Concat(Readarr.OtherCategories.GetBookCategories(RequestrrBot.Books.BookFormat.Audiobook))
+                    .ToArray()
             });
         }
 

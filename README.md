@@ -9,7 +9,7 @@ Requestrr
 
 ![logo](https://i.imgur.com/0UzLYvw.png)
 
-Requestrr is a chatbot used to simplify using services like Sonarr/Radarr/Lidarr/Overseerr/Ombi via the use of chat!  
+Requestrr is a chatbot used to simplify using services like Sonarr/Radarr/Lidarr/Bookshelf/Listenarr/Overseerr/Ombi via the use of chat!  
 
 ### Features
 
@@ -17,6 +17,7 @@ Requestrr is a chatbot used to simplify using services like Sonarr/Radarr/Lidarr
 - Users can get notified when their requests complete
 - Sonarr (V2-V4) & Radarr (V2-V5) integration with support for multiple instance via Overseerr (only for 4k/1080p)
 - Lidarr (V1-V2) intergration
+- Bookshelf integration for ebook requests and Listenarr integration for audiobook requests (both use the Readarr v1 API)
 - Overseerr integration with support for per user permissions/quotas and issue submission
 - Ombi (V3/V4) integration with support for per user roles/quotas and issue submission
 - Fully configurable via a web portal

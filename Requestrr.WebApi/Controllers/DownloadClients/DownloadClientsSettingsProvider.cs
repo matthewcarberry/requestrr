@@ -3,7 +3,9 @@ using Requestrr.WebApi.RequestrrBot;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Lidarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Ombi;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Overseerr;
+using Requestrr.WebApi.RequestrrBot.Books;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Radarr;
+using Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr;
 using Requestrr.WebApi.RequestrrBot.DownloadClients.Sonarr;
 
 namespace Requestrr.WebApi.Controllers.DownloadClients
@@ -20,7 +22,9 @@ namespace Requestrr.WebApi.Controllers.DownloadClients
                 Overseerr = new OverseerrSettingsProvider().Provide(),
                 Radarr = new RadarrSettingsProvider().Provide(),
                 Sonarr = new SonarrSettingsProvider().Provide(),
-                Lidarr = new LidarrSettingsProvider().Provider()
+                Lidarr = new LidarrSettingsProvider().Provider(),
+                Bookshelf = new ReadarrSettingsProvider().Provide(BookFormat.Ebook),
+                Listenarr = new ReadarrSettingsProvider().Provide(BookFormat.Audiobook)
             };
         }
     }
