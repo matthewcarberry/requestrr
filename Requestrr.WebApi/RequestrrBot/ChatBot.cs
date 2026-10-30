@@ -170,6 +170,7 @@ namespace Requestrr.WebApi.RequestrrBot
                 _client.SocketOpened -= OnSocketOpen;
                 _client.SocketClosed -= OnSocketClosed;
                 _client.Heartbeated -= Heartbeat;
+                _client.InteractionCreated -= LogInteraction;
                 _client.Dispose();
             }
 
@@ -179,6 +180,21 @@ namespace Requestrr.WebApi.RequestrrBot
                 _slashCommands.Dispose();
             }
         }
+
+        /// <summary>
+        /// Log level of the Discord library, set with REQUESTRR_DISCORD_LOG_LEVEL (e.g. Debug or Trace) to troubleshoot the bot
+        /// </summary>
+        private static LogLevel DiscordLogLevel => Enum.TryParse(Environment.GetEnvironmentVariable("REQUESTRR_DISCORD_LOG_LEVEL"), true, out LogLevel level) ? level : LogLevel.Warning;
+
+
+        private Task LogInteraction(DiscordClient client, InteractionCreateEventArgs e)
+        {
+            if (DiscordLogLevel <= LogLevel.Debug)
+                _logger.LogWarning($"Received interaction {e.Interaction.Type} \"{e.Interaction.Data?.Name}\" (command id {e.Interaction.Data?.Id}) in guild {e.Interaction.GuildId}");
+
+            return Task.CompletedTask;
+        }
+
 
         private async Task RestartBot(DiscordSettings previousSettings, DiscordSettings newSettings, HashSet<ulong> currentGuilds)
         {
@@ -193,7 +209,7 @@ namespace Requestrr.WebApi.RequestrrBot
                         Token = newSettings.BotToken,
                         TokenType = TokenType.Bot,
                         AutoReconnect = true,
-                        MinimumLogLevel = LogLevel.Warning,
+                        MinimumLogLevel = DiscordLogLevel,
                         Intents = DiscordIntents.All,
                         ReconnectIndefinitely = true
                     };
@@ -221,6 +237,7 @@ namespace Requestrr.WebApi.RequestrrBot
                     _client.SocketOpened += OnSocketOpen;
                     _client.SocketClosed += OnSocketClosed;
                     _client.Heartbeated += Heartbeat;
+                    _client.InteractionCreated += LogInteraction;
 
                     _currentGuilds = new HashSet<ulong>();
 
@@ -284,6 +301,7 @@ namespace Requestrr.WebApi.RequestrrBot
                             }
 
                             await _slashCommands.RefreshCommands();
+                            _logger.LogWarning($"Slash commands registered: {string.Join(", ", _slashCommands.RegisteredCommands.SelectMany(x => x.Value.Select(c => $"{c.Name} ({c.Id}) in {(x.Key.HasValue ? $"guild {x.Key}" : "global")}")))}");
                             await Task.Delay(TimeSpan.FromMinutes(1));
                         }
                         catch (Exception ex)
