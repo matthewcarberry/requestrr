@@ -249,18 +249,22 @@ namespace Requestrr.WebApi.RequestrrBot.DownloadClients.Readarr
 
         /// <summary>
         /// Adds the book (and its author when needed) the same way the Bookshelf UI does:
-        /// the lookup result is posted back with the category's profiles and root folder.
+        /// the search result is posted back with the category's profiles and root folder.
+        /// This uses /search rather than /book/lookup because only /search includes the editions and author that adding a book needs.
         /// </summary>
         private async Task CreateBookAsync(BookRequest request, Book book)
         {
             ReadarrCategory category = GetCategory(request, book);
             ReadarrSettings settings = _settings;
 
-            HttpResponseMessage response = await HttpGetAsync($"{BaseURL}/book/lookup?term={Uri.EscapeDataString(GetLookupTerm(book.BookId))}");
-            await response.ThrowIfNotSuccessfulAsync($"{ClientName}BookLookup failed", x => x.message);
+            HttpResponseMessage response = await HttpGetAsync($"{BaseURL}/search?term={Uri.EscapeDataString(GetLookupTerm(book.BookId))}");
+            await response.ThrowIfNotSuccessfulAsync($"{ClientName}BookSearch failed", x => x.message);
 
-            JArray lookupResults = JArray.Parse(await response.Content.ReadAsStringAsync());
-            JObject newBook = (JObject)(lookupResults.FirstOrDefault(x => x.Value<string>("foreignBookId") == book.BookId) ?? lookupResults.First());
+            List<JObject> searchResults = JArray.Parse(await response.Content.ReadAsStringAsync())
+                .Select(x => x["book"] as JObject)
+                .Where(x => x != null)
+                .ToList();
+            JObject newBook = searchResults.FirstOrDefault(x => x.Value<string>("foreignBookId") == book.BookId) ?? searchResults.First();
 
             JObject author = (JObject)newBook["author"];
             if (author != null && (author.Value<int?>("id") ?? 0) == 0)
