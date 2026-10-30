@@ -1,4 +1,4 @@
-FROM node AS node-build
+FROM node:20 AS node-build
 
 COPY ClientApp /app
 

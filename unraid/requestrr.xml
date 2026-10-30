@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>requestrr</Name>
+  <Repository>ghcr.io/matthewcarberry/requestrr:latest</Repository>
+  <Registry>https://github.com/matthewcarberry/requestrr/pkgs/container/requestrr</Registry>
+  <Network>bridge</Network>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/matthewcarberry/requestrr/issues</Support>
+  <Project>https://github.com/matthewcarberry/requestrr</Project>
+  <Overview>Requestrr fork with Bookshelf (books) and Listenarr (audiobook) requests, on top of the usual Sonarr, Radarr, Lidarr, Overseerr and Ombi support.</Overview>
+  <Category>Downloaders: MediaApp:Other</Category>
+  <WebUI>http://[IP]:[PORT:4545]/</WebUI>
+  <Icon>https://raw.githubusercontent.com/matthewcarberry/requestrr/master/Logos/requestrr_discord_Icon_256.png</Icon>
+  <Config Name="WebUI Port" Target="4545" Default="4545" Mode="tcp" Description="Web UI port" Type="Port" Display="always" Required="true" Mask="false">4545</Config>
+  <Config Name="Config" Target="/root/config" Default="/mnt/user/appdata/requestrr" Mode="rw" Description="Settings and database" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/requestrr</Config>
+</Container>
