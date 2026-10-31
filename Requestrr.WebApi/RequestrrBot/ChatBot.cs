@@ -190,7 +190,7 @@ namespace Requestrr.WebApi.RequestrrBot
         private Task LogInteraction(DiscordClient client, InteractionCreateEventArgs e)
         {
             if (DiscordLogLevel <= LogLevel.Debug)
-                _logger.LogWarning($"Received interaction {e.Interaction.Type} \"{e.Interaction.Data?.Name}\" (command id {e.Interaction.Data?.Id}) in guild {e.Interaction.GuildId}");
+                _logger.LogWarning($"Received interaction {e.Interaction.Type} \"{e.Interaction.Data?.Name} {e.Interaction.Data?.Options?.FirstOrDefault()?.Name}\" (command id {e.Interaction.Data?.Id}) in guild {e.Interaction.GuildId}");
 
             return Task.CompletedTask;
         }
@@ -565,6 +565,12 @@ namespace Requestrr.WebApi.RequestrrBot
                             await args.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral(true).WithContent(Language.Current.DiscordCommandMissingRoles));
                         else
                             await args.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral(true).WithContent(Language.Current.DiscordCommandUnknownPrecondition));
+                }
+                else
+                {
+                    //Any other error was previously dropped silently, which left Discord showing "The application did not respond"
+                    _logger.LogError(args.Exception, $"Error while executing slash command \"{args.Context.CommandName} {args.Context.Interaction.Data?.Options?.FirstOrDefault()?.Name}\": {args.Exception.Message}");
+                    await args.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral(true).WithContent(Language.Current.Error));
                 }
             }
             catch (System.Exception ex)
